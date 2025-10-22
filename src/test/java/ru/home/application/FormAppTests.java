@@ -1,10 +1,10 @@
-package com.example.form_app;
+package ru.home.application;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FormAppApplicationTests {
+class FormAppTests {
 
 	@Test
 	void contextLoads() {
