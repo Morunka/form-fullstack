@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "login": "ivan",
+      "firstName": "Иван",
+      "patronymicName": "Иванович",
+      "lastname": "Иванов",
+      "email": "ivan@email.ru",
+      "password": "ivanIvanovich"
+    },
+    {
+      "login": "petr",
+      "firstName": "Петр",
+      "patronymicName": "Петрович",
+      "lastname": "Петров",
+      "email": "petr@email.ru",
+      "password": "petrPetrovich"
+    }
+  ]
+}

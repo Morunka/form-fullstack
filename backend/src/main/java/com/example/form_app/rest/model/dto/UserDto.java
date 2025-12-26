@@ -1,21 +1,22 @@
-package com.example.form_app;
+package com.example.form_app.rest.model.dto;
 
-public class UserDTO {
-
-    private String firstName;
-
-    private String lastName;
-
-    private String patronymicName;
-
-    private String email;
+public class UserDto {
 
     private String login;
-
+    private String firstName;
+    private String lastname;
+    private String patronymicName;
+    private String email;
     private String password;
 
+    public String getLogin() {
+        return login;
+    }
 
-    // Геттеры и сеттеры для каждого поля
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -24,12 +25,12 @@ public class UserDTO {
         this.firstName = firstName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     public String getPatronymicName() {
@@ -46,14 +47,6 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
     }
 
     public String getPassword() {
