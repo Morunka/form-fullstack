@@ -41,6 +41,36 @@ public class UserService {
         }
     }
 
+    public ItemListResponseDto updateUser(UserDto updateUser) {
+        try {
+
+            ItemListResponseDto itemListResponseDto = getAllUsersFromFile();
+            if (updateUser == null || updateUser.getLogin() == null)
+                return itemListResponseDto;
+
+            // Ищем нужного пользователя в списке
+            for (UserDto user : itemListResponseDto.getItems()) {
+                if (updateUser.getLogin().equalsIgnoreCase(user.getLogin())) {
+                    user.setEmail(updateUser.getEmail());
+                    user.setFirstName(updateUser.getFirstName());
+                    user.setLastname(updateUser.getLastname());
+                    user.setPatronymicName(updateUser.getPatronymicName());
+                    user.setPassword(updateUser.getPassword());
+
+                    // Сохраняем изменение в файл
+                    String jsonData = Utils.objectToJsonString(itemListResponseDto);
+                    saveJsonStringToFile(jsonData, "users.json");
+
+                    break;
+                }
+            }
+
+            return itemListResponseDto;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public ItemListResponseDto deleteUser(String login) {
         try {
 
@@ -77,6 +107,7 @@ public class UserService {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             writer.write(jsonData);
             writer.flush();
+            writer.close();
             System.out.println("Successfully wrote JSON data to " + file.getAbsolutePath());
 
         } catch (Exception e) {

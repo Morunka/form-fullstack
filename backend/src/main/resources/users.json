@@ -15,6 +15,14 @@
       "lastname": "Петров",
       "email": "petr@email.ru",
       "password": "petrPetrovich"
+    },
+    {
+      "login": "vadim",
+      "firstName": "Вадим",
+      "patronymicName": "Вадимович",
+      "lastname": "Вадимов",
+      "email": "vadim@email.ru",
+      "password": "vadimVadimovich"
     }
   ]
 }

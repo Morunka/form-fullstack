@@ -23,6 +23,11 @@ public class ItemController {
         return userService.addUser(user);
     }
 
+    @PostMapping("/api/items/update")
+    public ItemListResponseDto postItemsUpdate(@RequestBody UserDto user) {
+        return userService.updateUser(user);
+    }
+
     @DeleteMapping("/api/items/delete")
     public ItemListResponseDto postItemsAdd(@RequestParam String login) {
         return userService.deleteUser(login);
