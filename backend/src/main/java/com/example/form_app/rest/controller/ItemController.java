@@ -13,22 +13,22 @@ public class ItemController {
 
     private final UserService userService;
 
-    @GetMapping("/api/items")
+    @GetMapping("/api/users")
     public ItemListResponseDto getItems() {
         return userService.getAllUsersFromFile();
     }
 
-    @PostMapping("/api/items/add")
+    @PostMapping("/api/users/add")
     public ItemListResponseDto postItemsAdd(@RequestBody UserDto user) {
         return userService.addUser(user);
     }
 
-    @PostMapping("/api/items/update")
+    @PostMapping("/api/users/update")
     public ItemListResponseDto postItemsUpdate(@RequestBody UserDto user) {
         return userService.updateUser(user);
     }
 
-    @DeleteMapping("/api/items/delete")
+    @DeleteMapping("/api/users/delete")
     public ItemListResponseDto postItemsAdd(@RequestParam String login) {
         return userService.deleteUser(login);
     }

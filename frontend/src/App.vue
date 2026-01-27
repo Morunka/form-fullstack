@@ -1,214 +1,150 @@
-<script setup lang="ts">
-import { ref, onMounted } from 'vue'
-
-const formData = ref({
-  firstName: '',
-  lastName: '',
-  patronymicName: '',
-  email: '',
-  login: '',
-  password: ''
-})
-
-const message = ref('')
-const users = ref<any[]>([])
-const selectedUserEmail = ref('') // используем email как уникальный идентификатор
-const selectedField = ref('firstName')
-const userData = ref('')
-
-const API_URL = 'http://localhost:8080/api/users'
-
-const loadUsers = async () => {
-  try {
-    const res = await fetch(API_URL)
-    if (!res.ok) throw new Error('HTTP error ' + res.status)
-    const result = await res.json()
-    // Бэкенд возвращает { items: [...] }
-    users.value = Array.isArray(result.items) ? result.items : []
-    message.value = ''
-  } catch (err) {
-    console.error('Ошибка загрузки пользователей:', err)
-    message.value = 'Ошибка загрузки пользователей'
-    users.value = []
-  }
-}
-
-const submitForm = async () => {
-  try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData.value)
-    })
-    if (!res.ok) throw new Error('HTTP error ' + res.status)
-    message.value = 'Пользователь успешно добавлен'
-    await loadUsers()
-    formData.value = {
-      firstName: '',
-      lastName: '',
-      patronymicName: '',
-      email: '',
-      login: '',
-      password: ''
-    }
-  } catch (err) {
-    console.error('Ошибка отправки формы:', err)
-    message.value = 'Ошибка отправки формы'
-  }
-}
-
-const fetchUserData = () => {
-  if (!selectedUserEmail.value) {
-    userData.value = ''
-    return
-  }
-  const user = users.value.find(u => u.email === selectedUserEmail.value)
-  if (user && selectedField.value in user) {
-    userData.value = user[selectedField.value]
-  } else {
-    userData.value = user ? JSON.stringify(user, null, 2) : 'Пользователь не найден'
-  }
-}
-
-const fetchAllUsers = async () => {
-  try {
-    const res = await fetch(API_URL)
-    if (!res.ok) throw new Error('HTTP error ' + res.status)
-    const data = await res.json()
-    userData.value = JSON.stringify(data, null, 2)
-  } catch (err) {
-    console.error('Ошибка получения всех пользователей:', err)
-    userData.value = 'Ошибка получения всех пользователей'
-  }
-}
-
-onMounted(loadUsers)
-</script>
-
 <template>
-  <div class="container">
-    <h2>Добавить пользователя</h2>
+  <div id="app">
+    <Header />
 
-    <form @submit.prevent="submitForm" class="form">
-      <div class="form-group">
-        <label>Имя:</label>
-        <input v-model="formData.firstName" type="text" required />
-      </div>
-      <div class="form-group">
-        <label>Фамилия:</label>
-        <input v-model="formData.lastName" type="text" required />
-      </div>
-      <div class="form-group">
-        <label>Отчество:</label>
-        <input v-model="formData.patronymicName" type="text" />
-      </div>
-      <div class="form-group">
-        <label>Email:</label>
-        <input v-model="formData.email" type="email" required />
-      </div>
-      <div class="form-group">
-        <label>Логин:</label>
-        <input v-model="formData.login" type="text" required />
-      </div>
-      <div class="form-group">
-        <label>Пароль:</label>
-        <input v-model="formData.password" type="password" required />
-      </div>
-      <button type="submit">Добавить</button>
-    </form>
+    <main class="main-content">
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" :key="$route.path" />
+        </transition>
+      </router-view>
+    </main>
 
-    <p v-if="message" class="message">{{ message }}</p>
+    <Footer />
 
-    <hr />
-
-    <h3>Просмотр пользователей</h3>
-    <div class="form-group">
-      <label>Пользователь:</label>
-      <select v-model="selectedUserEmail">
-        <option disabled value="">-- выбрать --</option>
-        <option v-for="user in users" :key="user.email" :value="user.email">
-          {{ user.lastName }} {{ user.firstName }}
-        </option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Поле:</label>
-      <select v-model="selectedField">
-        <option value="firstName">Имя</option>
-        <option value="lastName">Фамилия</option>
-        <option value="patronymicName">Отчество</option>
-        <option value="email">Email</option>
-        <option value="login">Логин</option>
-        <option value="password">Пароль</option>
-      </select>
-    </div>
-
-    <div class="button-group">
-      <button @click="fetchUserData">Получить данные</button>
-      <button @click="fetchAllUsers">Получить всех</button>
-    </div>
-
-    <pre v-if="userData" class="output">{{ userData }}</pre>
+    <transition name="fade-slide">
+      <button
+          v-if="showScrollButton"
+          @click="scrollToTop"
+          class="scroll-to-top"
+      >
+        <font-awesome-icon :icon="['fas', 'chevron-up']" />
+      </button>
+    </transition>
   </div>
 </template>
 
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+import Header from '@/components/Layout/Header.vue'
+
+const showScrollButton = ref(false)
+
+const handleScroll = () => {
+  showScrollButton.value = window.scrollY > 300
+}
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
+</script>
+
 <style>
-.container {
-  max-width: 600px;
-  margin: 30px auto;
-  padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-.form-group {
-  margin: 12px 0;
-}
-.form-group label {
-  display: block;
-  margin-bottom: 4px;
-  font-weight: 600;
-}
-.form-group input {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+/* Глобальные стили */
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
-button {
-  padding: 8px 16px;
-  margin-top: 8px;
-  background: #007bff;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background: #f9fafb;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  margin-top: 80px; /* Высота хедера */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Анимации для переходов */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Стили кнопки "наверх" */
+.scroll-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
+  font-size: 1.2rem;
+  z-index: 999;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
-button:hover {
-  background: #0056b3;
+
+.scroll-to-top:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
 }
-.message {
-  color: green;
-  margin: 12px 0;
-  min-height: 1.5em;
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
-.button-group {
-  margin: 16px 0;
+
+.fade-slide-enter-from,
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
 }
-.button-group button {
-  margin-right: 10px;
-}
-.output {
-  margin-top: 16px;
-  background: #f8f9fa;
-  padding: 12px;
-  border-radius: 4px;
-  overflow-x: auto;
-  white-space: pre-wrap;
-}
-hr {
-  margin: 24px 0;
-  border: 0;
-  border-top: 1px solid #eee;
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .main-content {
+    margin-top: 70px;
+  }
+
+  .scroll-to-top {
+    bottom: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+  }
 }
 </style>
